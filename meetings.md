@@ -12,7 +12,7 @@ We discussed about the API description, what we had done and what was missing. T
 ### Action points
 *List here the actions points discussed with assistants*
 
-- We were missing a concept diagram. TODO for next time.
+- Concept diagram was not done correctly, needs fixing. TODO for next time.
 - More explaining todo on the application, and why a user would want to use the app.
 - Service needs explaining for next deadline.
 - More info about related work.

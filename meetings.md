@@ -14,8 +14,8 @@
 
 
 ## Meeting 2.
-* **DATE:**
-* **ASSISTANTS:**
+* **DATE:** 30.1.2025
+* **ASSISTANTS:** Ivan Sanchez
 
 ### Minutes
 *Summary of what was discussed during the meeting*

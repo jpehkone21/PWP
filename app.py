@@ -35,7 +35,55 @@ def get_quotes():
     
     return jsonify({'quotes': quotes_list})
 
-# Add a quote under a specific character
+# Get all quotes from creatures
+@app.route('/api/creatures/quotes', methods=['GET'])
+def get_characters_quotes():
+    quotes = Quotes.query.filter(Quotes.creature_name.isnot(None)).all()
+    
+    quotes_list = [
+        {
+            'quote': quote.quote,
+            'mood': quote.mood,
+            'owner_name': quote.creature_name
+        }
+        for quote in quotes
+    ]
+    
+    return jsonify({'quotes': quotes_list})
+
+# Get all quotes from humans
+@app.route('/api/humans/quotes', methods=['GET'])
+def get_humans_quotes():
+    quotes = Quotes.query.filter(Quotes.human_name.isnot(None)).all()
+    
+    quotes_list = [
+        {
+            'quote': quote.quote,
+            'mood': quote.mood,
+            'owner_name': quote.human_name
+        }
+        for quote in quotes
+    ]
+    
+    return jsonify({'quotes': quotes_list})
+
+# Get all quotes from animals
+@app.route('/api/animals/quotes', methods=['GET'])
+def get_animals_quotes():
+    quotes = Quotes.query.filter(Quotes.animal_name.isnot(None)).all()
+    
+    quotes_list = [
+        {
+            'quote': quote.quote,
+            'mood': quote.mood,
+            'owner_name': quote.animal_name
+        }
+        for quote in quotes
+    ]
+    
+    return jsonify({'quotes': quotes_list})
+
+# Add a quote under an existing character
 @app.route('/api/quotes', methods=['POST'])
 def add_quote():
     data = request.get_json()
@@ -87,6 +135,55 @@ def add_quote():
 
     return jsonify({'message': f"Quote added to {entity_type.capitalize()} '{entity_name}' successfully!"}), 201
 
+# Get all characters (creatures, humans, and animals)
+@app.route('/api/characters', methods=['GET'])
+def get_all_characters():
+    creatures = Creatures.query.all()
+    humans = Humans.query.all()
+    animals = Animals.query.all()
+
+    creatures_list = [
+        {
+            'id': creature.id,
+            'name': creature.name,
+            'age': creature.age,
+            'type': creature.type,
+            'special_force': creature.special_force,
+            'picture': creature.picture
+        }
+        for creature in creatures
+    ]
+
+    humans_list = [
+        {
+            'id': human.id,
+            'name': human.name,
+            'age': human.age,
+            'relation': human.relation,
+            'hobby': human.hobby,
+            'picture': human.picture
+        }
+        for human in humans
+    ]
+
+    animals_list = [
+        {
+            'id': animal.id,
+            'name': animal.name,
+            'age': animal.age,
+            'species': animal.species,
+            'environment': animal.environment,
+            'picture': animal.picture
+        }
+        for animal in animals
+    ]
+
+    return jsonify({
+        'creatures': creatures_list,
+        'humans': humans_list,
+        'animals': animals_list
+    })
+
 # Get all creatures
 @app.route('/api/creatures', methods=['GET'])
 def get_creatures():
@@ -104,6 +201,40 @@ def get_creatures():
         for creature in creatures
     ]
     return jsonify({'creatures': creatures_list})
+
+# Get all humans
+@app.route('/api/humans', methods=['GET'])
+def get_humans():
+    humans = Humans.query.all()
+    humans_list = [
+        {
+            'id': human.id,
+            'name': human.name,
+            'age': human.age,
+            'relation': human.relation,
+            'hobby': human.hobby,
+            'picture': human.picture
+        }
+        for human in humans
+    ]
+    return jsonify({'creatures': humans_list})
+
+# Get all animals
+@app.route('/api/animals', methods=['GET'])
+def get_animals():
+    animals = Animals.query.all()
+    animals_list = [
+        {
+            'id': animal.id,
+            'name': animal.name,
+            'age': animal.age,
+            'species': animal.species,
+            'environment': animal.environment,
+            'picture': animal.picture
+        }
+        for animal in animals
+    ]
+    return jsonify({'creatures': animals_list})
 
 # Post a new creature
 @app.route('/api/creatures', methods=['POST'])
@@ -144,6 +275,47 @@ def create_creature():
     except Exception as e:
         db.session.rollback() 
         return jsonify({'message': str(e)}), 500
+    
+# Post a new animal
+@app.route('/api/animals', methods=['POST'])
+def create_animal():
+    # Get the JSON data from the request
+    data = request.get_json()
+    
+    if not data.get('name') or not data.get('species'):
+        return jsonify({'message': 'Missing required fields (name, species)'}), 400
+    
+    new_animal = Animals(
+        name=data['name'],
+        age=data.get('age'), 
+        species=data['species'],
+        environment=data.get('environment'),
+        picture=data.get('picture') 
+    )
+
+    try:
+        # Add the new animal to the session and commit it
+        db.session.add(new_animal)
+        db.session.commit()
+        
+        return jsonify({
+            'message': 'Animal created successfully!',
+            'animal': {
+                'id': new_animal.id,
+                'name': new_animal.name,
+                'age': new_animal.age,
+                'species': new_animal.species,
+                'environment': new_animal.environment,
+                'picture': new_animal.picture
+            }
+        }), 201
+    except IntegrityError:
+        db.session.rollback() 
+        return jsonify({'message': 'Animal already exists with that name.'}), 409
+    except Exception as e:
+        db.session.rollback() 
+        return jsonify({'message': str(e)}), 500
+
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -54,9 +54,9 @@ class Quotes(db.Model):
     quote = db.Column(db.String(256), nullable=False, unique=True)
     mood = db.Column(db.Float, nullable=False)
 
-    creature_name = db.Column(db.String, db.ForeignKey('creatures.name'), nullable=True, ondelete="SET NULL")
-    human_name = db.Column(db.String, db.ForeignKey('humans.name'), nullable=True, ondelete="SET NULL")
-    animal_name = db.Column(db.String, db.ForeignKey('animals.name'), nullable=True, ondelete="SET NULL")
+    creature_name = db.Column(db.String, db.ForeignKey('creatures.name'), nullable=True)
+    human_name = db.Column(db.String, db.ForeignKey('humans.name'), nullable=True)
+    animal_name = db.Column(db.String, db.ForeignKey('animals.name'), nullable=True)
     
     # This constraint is from chatgpt
     # Enforce that only one name is provided

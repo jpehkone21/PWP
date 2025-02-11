@@ -24,7 +24,7 @@ animal1 = Animals(
     environment="floating in a far away galaxy",
 )
 quote1 = Quotes(
-    quote="The rhythm of the universe is inside you — dance like gravity can't hold you down!",
+    quote="The rhythm of the universe is inside you, dance like gravity can't hold you down!",
     mood=5,
     creatures=creature1,
 )

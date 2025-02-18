@@ -35,8 +35,8 @@ Database design and implementation were assessed. Overall it was ok, but the rel
 - Instructions for installing requirements was missing
 - Diagram about the database models needs changes (arrows should be the other way around, need to add text if relations are one-one, many-one etc.)
 - The relation between quotes and creature/humans/animals was done incorrectly. Foreign key should be only in creatures/humans/animals and not in quotes.
-(- Suggestion that the name attribute could be the primary key for creatures/humans/animals)
-(- Suggestion that creature types could be constrained in db or in api) 
+- (Suggestion that the name attribute could be the primary key for creatures/humans/animals)
+- (Suggestion that creature types could be constrained in db or in api) 
 
 ## Meeting 3.
 * **DATE:**

@@ -10,3 +10,15 @@ __Remember to include all required documentation and HOWTOs, including how to cr
 
 # Database
 This project uses a SQLite database. The database is in quotes_database.db file, and all database models are declared in database.py file. A new database can be created and prepopulated by running the prepopulate_database.py file (remove the existing database before trying to create a new one). The requirements.txt includes all project dependencies so far.
+
+First create/activate python virtual environment
+
+Then install dependencies:
+```bash
+pip install -r requirements.txt
+```
+
+You can create and prepopulate the database by running:
+```bash
+python prepopulate_database.py
+```

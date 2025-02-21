@@ -20,8 +20,7 @@ def set_sqlite_pragma(dbapi_connection, connection_record):
     cursor.close()
 
 class Creatures(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(32), nullable=False, unique=True)
+    name = db.Column(db.String(32), nullable=False, unique=True, primary_key=True)
     age = db.Column(db.Integer, nullable=True)
     picture = db.Column(db.String(256), nullable=True)
     type=db.Column(db.String(128), nullable=True)
@@ -30,8 +29,7 @@ class Creatures(db.Model):
     quotes = db.relationship("Quotes", back_populates="creatures")
 
 class Humans(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(32), nullable=False, unique=True)
+    name = db.Column(db.String(32), nullable=False, unique=True, primary_key=True)
     age = db.Column(db.Integer, nullable=True)
     picture = db.Column(db.String(256), nullable=True)
     relation=db.Column(db.String(128), nullable=True)
@@ -40,8 +38,7 @@ class Humans(db.Model):
     quotes = db.relationship("Quotes", back_populates="humans")
 
 class Animals(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(32), nullable=False, unique=True)
+    name = db.Column(db.String(32), nullable=False, unique=True, primary_key=True)
     age = db.Column(db.Integer, nullable=True)
     picture = db.Column(db.String(256), nullable=True)
     species=db.Column(db.String(128), nullable=True)
@@ -53,7 +50,7 @@ class Quotes(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     quote = db.Column(db.String(256), nullable=False, unique=True)
     mood = db.Column(db.Float, nullable=False)
-
+    
     creature_name = db.Column(db.String, db.ForeignKey('creatures.name'), nullable=True)
     human_name = db.Column(db.String, db.ForeignKey('humans.name'), nullable=True)
     animal_name = db.Column(db.String, db.ForeignKey('animals.name'), nullable=True)
@@ -66,8 +63,8 @@ class Quotes(db.Model):
             name="check_only_one_entity"
         ),
     )
+
     creatures = db.relationship("Creatures", back_populates="quotes")
     humans = db.relationship("Humans", back_populates="quotes")
     animals = db.relationship("Animals", back_populates="quotes")
-    
    

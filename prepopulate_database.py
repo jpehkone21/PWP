@@ -28,12 +28,18 @@ quote1 = Quotes(
     mood=5,
     creatures=creature1,
 )
+quote2 = Quotes(
+    quote="You are awesome!",
+    mood=10,
+    animals=animal1,
+)
 
 
 db.session.add(creature1)
 db.session.add(human1)
 db.session.add(animal1)
 db.session.add(quote1)
+db.session.add(quote2)
 db.session.commit()
 
 print(vars(Creatures.query.first()))

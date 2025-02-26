@@ -7,7 +7,7 @@ class CreatureCollection(Resource):
 
     def get(self):
         # TODO
-        pass
+        return "All creatures"
 
     def post(self):
         # TODO

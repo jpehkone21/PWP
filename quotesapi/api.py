@@ -13,6 +13,8 @@ api.add_resource(CreatureCollection, "/creatures/")
 api.add_resource(HumanCollection, "/humans/")
 api.add_resource(AnimalCollection, "/animals/")
 
+# TODO need to do converter for all these before they work
+'''
 api.add_resource(CreatureItem, "/creatures/<creature:creature>/")
 api.add_resource(HumanItem, "/humans/<human:human>/")
 api.add_resource(AnimalItem, "/animals/<animal:animal>/")
@@ -23,3 +25,4 @@ api.add_resource(QuoteItem,
     "/humans/<humans>/quotes/<quote>/",
     "/animals/<animal>/quotes/<quote>/"
 )
+'''

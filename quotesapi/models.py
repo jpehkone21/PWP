@@ -24,12 +24,23 @@ class Creatures(db.Model):
     quotes = db.relationship("Quotes", back_populates="creatures")
 
     def serialize(self):
-        # TODO
-        pass
+        doc = {
+            "name" : self.name,
+            "age" : self.age,
+            "picture" : self.picture,
+            "type" : self.type,
+            "special_force" : self.special_force,
+            "quotes" :  self.quotes.serialize() # en tiiä onko oikein
+        }
+        return doc
 
-    def deserialize(self):
-        # TODO
-        pass
+    def deserialize(self, doc):
+        self.name = doc["name"]
+        self.age = doc.get("age")
+        self.picture = doc.get("picture")
+        self.type = doc.get("type")
+        self.special_force = doc.get("special_force")
+        self.quotes = doc.get("quotes").deserialize()
 
 
     @staticmethod
@@ -47,7 +58,18 @@ class Creatures(db.Model):
             "description": "Age of the creature",
             "type": "integer"
         }
-        # TODO Need to continue this...
+        props["picture"] = {
+            "description": "Ascii picture of the creature",
+            "type": "string"
+        }
+        props["type"] = {
+            "description": "Type of the creature",
+            "type": "string"
+        }
+        props["special_force"] = {
+            "description": "Special force of the creature",
+            "type": "string"
+        }
         return schema
 
 class Humans(db.Model):
@@ -60,12 +82,23 @@ class Humans(db.Model):
     quotes = db.relationship("Quotes", back_populates="humans")
 
     def serialize(self):
-        # TODO
-        pass
+        doc = {
+            "name" : self.name,
+            "age" : self.age,
+            "picture" : self.picture,
+            "relation" : self.relation,
+            "hobby" : self.hobby,
+            "quotes" :  self.quotes.serialize() # en tiiä onko oikein 
+        }
+        return doc
 
-    def deserialize(self):
-        # TODO
-        pass
+    def deserialize(self, doc):
+        self.name = doc["name"]
+        self.age = doc.get("age")
+        self.picture = doc.get("picture")
+        self.relation = doc.get("relation")
+        self.hobby = doc.get("hobby")
+        self.quotes = doc.get("quotes").deserialize()
 
     @staticmethod
     def json_schema():
@@ -75,14 +108,25 @@ class Humans(db.Model):
         }
         props = schema["properties"] = {}
         props["name"] = {
-            "description": "Creature's unique name",
+            "description": "Human's unique name",
             "type": "string"
         }
         props["age"] = {
-            "description": "Age of the creature",
+            "description": "Age of the human",
             "type": "integer"
         }
-        # TODO Need to continue this...
+        props["picture"] = {
+            "description": "Ascii picture of the human",
+            "type": "string"
+        }
+        props["relation"] = {
+            "description": "What relation does the human have, e.g. sister",
+            "type": "string"
+        }
+        props["hobby"] = {
+            "description": "The human's hobby",
+            "type": "string"
+        }
         return schema
 
 class Animals(db.Model):
@@ -95,12 +139,23 @@ class Animals(db.Model):
     quotes = db.relationship("Quotes", back_populates="animals")  
 
     def serialize(self):
-        # TODO
-        pass
+        doc = {
+            "name" : self.name,
+            "age" : self.age,
+            "picture" : self.picture,
+            "species" : self.species,
+            "environment" : self.environment,
+            "quotes" :  self.quotes.serialize() # en tiiä onko oikein 
+        }
+        return doc
 
-    def deserialize(self):
-        # TODO
-        pass
+    def deserialize(self, doc):
+        self.name = doc["name"]
+        self.age = doc.get("age")
+        self.picture = doc.get("picture")
+        self.species = doc.get("species")
+        self.environment = doc.get("environment")
+        self.quotes = doc.get("quotes").deserialize()
 
     @staticmethod
     def json_schema():
@@ -110,14 +165,25 @@ class Animals(db.Model):
         }
         props = schema["properties"] = {}
         props["name"] = {
-            "description": "Creature's unique name",
+            "description": "Animal's unique name",
             "type": "string"
         }
         props["age"] = {
-            "description": "Age of the creature",
+            "description": "Age of the animal",
             "type": "integer"
         }
-        # TODO Need to continue this...
+        props["picture"] = {
+            "description": "Ascii picture of the animal",
+            "type": "string"
+        }
+        props["species"] = {
+            "description": "Species of the animal",
+            "type": "string"
+        }
+        props["environment"] = {
+            "description": "Environment where the animal lives",
+            "type": "string"
+        }
         return schema
 
 class Quotes(db.Model):
@@ -143,17 +209,40 @@ class Quotes(db.Model):
     animals = db.relationship("Animals", back_populates="quotes")
 
     def serialize(self):
-        # TODO
-        pass
+        doc = {
+            "quote" : self.quote,
+            "mood" : self.mood
+        }
+        '''
+        if self.creature_name:
+            doc["creature_name"] = self.creature_name
+        elif self.human_name:
+            doc["human_name"] = self.human_name
+        elif self.animal_name:
+            doc["animal_name"] = self.animal_name
+        '''
+        return doc
 
-    def deserialize(self):
-        # TODO
-        pass
+    def deserialize(self, doc):
+        self.quote = doc["quote"]
+        self.mood = doc["mood"]
 
     @staticmethod
     def json_schema():
-        # TODO Need to continue this...
-        pass
+        schema = {
+            "type": "object",
+            "required": ["quote", "mood"]
+        }
+        props = schema["properties"] = {}
+        props["quote"] = {
+            "description": "written quote",
+            "type": "string"
+        }
+        props["mood"] = {
+            "description": "Mood of the quote as number from 0-10",
+            "type": "number"
+        }
+        return schema
    
 
 @click.command("init-db")

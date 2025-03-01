@@ -142,5 +142,7 @@ class QuoteItem(Resource):
         return Response(status=204)
 
     def delete(self, quote, animal=None, creature=None, human=None):
-        # TODO
-        pass
+        db.session.delete(quote)
+        db.session.commit()
+
+        return Response(status=204)

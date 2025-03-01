@@ -1,7 +1,7 @@
 import json
 from flask import request, Response, url_for
 from flask_restful import Resource
-from quotesapi.models import Animals
+from quotesapi.models import Animals, Quotes
 from quotesapi import db
 from jsonschema import validate, ValidationError, draft7_format_checker
 from werkzeug.exceptions import NotFound, Conflict, BadRequest, UnsupportedMediaType
@@ -84,5 +84,14 @@ class AnimalItem(Resource):
 
 
     def delete(self, animal):
-        # TODO
-        pass
+        # Delete all animal's quotes before deleting animal
+        quotes = Quotes.query.join(Animals).filter(
+                Quotes.creature_name == animal.name
+            ).all()
+        if len(quotes) > 0:
+            for quote in quotes:
+                db.session.delete(quote)
+        db.session.delete(animal)
+        db.session.commit()
+
+        return Response(status=204)

@@ -43,9 +43,10 @@ class AnimalConverter(BaseConverter):
 class QuoteConverter(BaseConverter):
     
     def to_python(self, value):
-        quote  = Quotes.query.filter_by(quote=value).first()  
+        quote  = Quotes.query.filter_by(id=value).first()  
         if quote is None:
             raise NotFound
+        print("quote converter")
         return quote
     
     def to_url(self, value):

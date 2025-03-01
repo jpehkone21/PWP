@@ -29,7 +29,7 @@ api.add_resource(QuoteCollection,
     "/animals/<animal>/quotes/"
 )
 api.add_resource(QuoteItem, 
-    "/creatures/<creature>/quotes/<quote>/",
-    "/humans/<humans>/quotes/<quote>/",
-    "/animals/<animal>/quotes/<quote>/"
+    "/creatures/<creature>/quotes/<quote:quote>/",
+    "/humans/<humans>/quotes/<quote:quote>/",
+    "/animals/<animal>/quotes/<quote:quote>/"
 )

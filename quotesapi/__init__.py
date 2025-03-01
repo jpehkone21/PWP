@@ -27,6 +27,14 @@ def create_app(test_config=None):
     db.init_app(app)
     from . import models
     from . import api
+    from quotesapi.utils import CreatureConverter, HumanConverter, AnimalConverter, QuoteConverter
+    
+    app.url_map.converters["creature"] = CreatureConverter
+    app.url_map.converters["human"] = HumanConverter
+    app.url_map.converters["animal"] = AnimalConverter
+    app.url_map.converters["quote"] = QuoteConverter
+
+
     app.cli.add_command(models.init_db_command)
     app.register_blueprint(api.api_bp)
     return app

@@ -3,6 +3,9 @@ from flask import request, Response, url_for
 from flask_restful import Resource
 from quotesapi.models import Creatures
 from quotesapi import db
+from jsonschema import validate, ValidationError, draft7_format_checker
+from werkzeug.exceptions import NotFound, Conflict, BadRequest, UnsupportedMediaType
+from sqlalchemy.exc import IntegrityError
 
 class CreatureCollection(Resource):
 
@@ -59,8 +62,25 @@ class CreatureItem(Resource):
         return creature.serialize()
 
     def put(self, creature):
-        # TODO
-        pass
+        if not request.json:
+            raise UnsupportedMediaType
+
+        try:
+            validate(request.json, Creatures.json_schema())
+        except ValidationError as e:
+            raise BadRequest(description=str(e)) from e
+
+        creature.deserialize(request.json)
+        try:
+            db.session.add(creature)
+            db.session.commit()
+        except IntegrityError as e:
+            raise Conflict(
+                409,
+                f"Creature with name '{request.json["name"]}' already exists."
+            ) from e
+        
+        return Response(status=204)
 
     def delete(self, creature):
         # TODO

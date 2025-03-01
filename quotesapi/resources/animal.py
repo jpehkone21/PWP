@@ -3,9 +3,9 @@ from flask import request, Response, url_for
 from flask_restful import Resource
 from quotesapi.models import Animals
 from quotesapi import db
-#from sensorhub import cache
-#from sensorhub.models import Measurement, Sensor
-#from sensorhub.utils import SensorhubBuilder, create_error_response, page_key, require_sensor_key
+from jsonschema import validate, ValidationError, draft7_format_checker
+from werkzeug.exceptions import NotFound, Conflict, BadRequest, UnsupportedMediaType
+from sqlalchemy.exc import IntegrityError
 
 
 class AnimalCollection(Resource):
@@ -62,8 +62,26 @@ class AnimalItem(Resource):
         return animal.serialize()
 
     def put(self, animal):
-        # TODO
-        pass
+        if not request.json:
+            raise UnsupportedMediaType
+
+        try:
+            validate(request.json, Animals.json_schema())
+        except ValidationError as e:
+            raise BadRequest(description=str(e)) from e
+
+        animal.deserialize(request.json)
+        try:
+            db.session.add(animal)
+            db.session.commit()
+        except IntegrityError as e:
+            raise Conflict(
+                409,
+                f"Animal with name '{request.json["name"]}' already exists."
+            ) from e
+        
+        return Response(status=204)
+
 
     def delete(self, animal):
         # TODO

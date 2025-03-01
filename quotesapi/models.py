@@ -30,7 +30,7 @@ class Creatures(db.Model):
             "picture" : self.picture,
             "type" : self.type,
             "special_force" : self.special_force,
-            "quotes" :  self.quotes.serialize() # en tiiä onko oikein
+            #"quotes" :  self.quotes.serialize() # en tiiä onko oikein
         }
         return doc
 
@@ -40,14 +40,15 @@ class Creatures(db.Model):
         self.picture = doc.get("picture")
         self.type = doc.get("type")
         self.special_force = doc.get("special_force")
-        self.quotes = doc.get("quotes").deserialize()
+        #self.quotes = doc.get("quotes").deserialize()
 
 
     @staticmethod
     def json_schema():
         schema = {
             "type": "object",
-            "required": ["name"]
+            "required": ["name"],
+            "additionalProperties": False
         }
         props = schema["properties"] = {}
         props["name"] = {
@@ -88,7 +89,7 @@ class Humans(db.Model):
             "picture" : self.picture,
             "relation" : self.relation,
             "hobby" : self.hobby,
-            "quotes" :  self.quotes.serialize() # en tiiä onko oikein 
+            #"quotes" :  self.quotes.serialize() # en tiiä onko oikein 
         }
         return doc
 
@@ -98,13 +99,14 @@ class Humans(db.Model):
         self.picture = doc.get("picture")
         self.relation = doc.get("relation")
         self.hobby = doc.get("hobby")
-        self.quotes = doc.get("quotes").deserialize()
+        #self.quotes = doc.get("quotes").deserialize()
 
     @staticmethod
     def json_schema():
         schema = {
             "type": "object",
-            "required": ["name"]
+            "required": ["name"],
+            "additionalProperties": False
         }
         props = schema["properties"] = {}
         props["name"] = {
@@ -145,7 +147,7 @@ class Animals(db.Model):
             "picture" : self.picture,
             "species" : self.species,
             "environment" : self.environment,
-            "quotes" :  self.quotes.serialize() # en tiiä onko oikein 
+            #"quotes" :  self.quotes.serialize() # en tiiä onko oikein 
         }
         return doc
 
@@ -155,13 +157,14 @@ class Animals(db.Model):
         self.picture = doc.get("picture")
         self.species = doc.get("species")
         self.environment = doc.get("environment")
-        self.quotes = doc.get("quotes").deserialize()
+        #self.quotes = doc.get("quotes").deserialize()
 
     @staticmethod
     def json_schema():
         schema = {
             "type": "object",
-            "required": ["name"]
+            "required": ["name"],
+            "additionalProperties": False
         }
         props = schema["properties"] = {}
         props["name"] = {
@@ -231,7 +234,8 @@ class Quotes(db.Model):
     def json_schema():
         schema = {
             "type": "object",
-            "required": ["quote", "mood"]
+            "required": ["quote", "mood"],
+            #"additionalProperties": False
         }
         props = schema["properties"] = {}
         props["quote"] = {

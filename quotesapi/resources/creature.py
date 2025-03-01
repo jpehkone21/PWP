@@ -21,10 +21,10 @@ class CreatureCollection(Resource):
     def post(self):
         # error cheking
         if request.method != "POST":
-            return "POST method required"
+            return "POST method required", 415
     
         if not request.is_json:
-            return "Request content type must be JSON"
+            return "Request content type must be JSON", 400
         
         try:
             name = request.json["name"]
@@ -33,15 +33,15 @@ class CreatureCollection(Resource):
             type = request.json["type"]
             special_force = request.json["special_force"]
         except (ValueError, KeyError):
-            return "Incomplete request - missing fields"
+            return "Incomplete request - missing fields", 400
         
         try:
             age = int(age)
         except (ValueError, TypeError):
-            return "Age must be number"
+            return "Age must be number", 400
         
         if Creatures.query.filter_by(name=name).first() is not None:  #katotaanko niin et yhen niminen eläin voi vain olla?
-            return "Creature already exists"
+            return "Creature already exists", 409
         ## 
         
         new_creature = Creatures(name=name, 
@@ -53,7 +53,12 @@ class CreatureCollection(Resource):
         db.session.add(new_creature)
         db.session.commit()
 
-        return "Creature added succesfully"
+        from quotesapi.api import api
+        creature_uri = api.url_for(CreatureItem, creature=new_creature)
+        headers = {"location": creature_uri}
+        #print(headers)
+        return Response(status=201, headers=headers)
+        #return "Creature added succesfully"
 
 
 class CreatureItem(Resource):
@@ -69,6 +74,10 @@ class CreatureItem(Resource):
             validate(request.json, Creatures.json_schema())
         except ValidationError as e:
             raise BadRequest(description=str(e)) from e
+
+        # Prevent changing the primary key (name)
+        if creature.name != request.json["name"]:
+            return "Cannot change primary key (name)", 400
 
         creature.deserialize(request.json)
         try:

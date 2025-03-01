@@ -2,7 +2,7 @@ import json
 from flask import request, Response, url_for, jsonify
 from flask_restful import Resource
 from quotesapi.models import Quotes, Animals, Creatures, Humans
-from quotesapi import db
+from quotesapi import db, api
 from jsonschema import validate, ValidationError, draft7_format_checker
 from werkzeug.exceptions import NotFound, Conflict, BadRequest, UnsupportedMediaType
 from sqlalchemy.exc import IntegrityError
@@ -111,6 +111,11 @@ class QuoteCollection(Resource):
         
         db.session.add(new_quote)
         db.session.commit()
+
+        #quote_uri = api.url_for(QuoteItem, creature=creature, quote=new_quote.id)
+        #headers = {"location": quote_uri}
+        #print(headers)
+        #return Response(status=201, headers=headers)
 
         return "Quote added succesfully"
 

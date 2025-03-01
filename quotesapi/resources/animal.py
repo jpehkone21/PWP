@@ -22,10 +22,10 @@ class AnimalCollection(Resource):
     def post(self):
         # error cheking
         if request.method != "POST":
-            return "POST method required"
+            return "POST method required", 415
     
         if not request.is_json:
-            return "Request content type must be JSON"
+            return "Request content type must be JSON", 400
         
         try:
             name = request.json["name"]
@@ -34,15 +34,15 @@ class AnimalCollection(Resource):
             species = request.json["species"]
             environment = request.json["environment"]
         except (ValueError, KeyError):
-            return "Incomplete request - missing fields"
+            return "Incomplete request - missing fields", 400
         
         try:
             age = int(age)
         except (ValueError, TypeError):
-            return "Age must be number"
+            return "Age must be number", 400
         
         if Animals.query.filter_by(name=name).first() is not None:  #katotaanko niin et yhen niminen eläin voi vain olla?
-            return "Animal already exists"
+            return "Animal already exists", 409
         ## 
         
         new_animal = Animals(name=name, 
@@ -53,8 +53,13 @@ class AnimalCollection(Resource):
         
         db.session.add(new_animal)
         db.session.commit()
+        from quotesapi.api import api
+        animal_uri = api.url_for(AnimalItem, animal=new_animal)
+        headers = {"location": animal_uri}
+        #print(headers)
+        return Response(status=201, headers=headers)
 
-        return "Animal added succesfully"
+        #return "Animal added succesfully"
 
 class AnimalItem(Resource):
 
@@ -70,6 +75,9 @@ class AnimalItem(Resource):
         except ValidationError as e:
             raise BadRequest(description=str(e)) from e
 
+        # Prevent changing the primary key (name)
+        if animal.name != request.json["name"]:
+            return "Cannot change primary key (name)", 400
         animal.deserialize(request.json)
         try:
             db.session.add(animal)

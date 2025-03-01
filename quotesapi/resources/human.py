@@ -22,10 +22,10 @@ class HumanCollection(Resource):
     def post(self):
         # error cheking
         if request.method != "POST":
-            return "POST method required"
+            return "POST method required", 415
     
         if not request.is_json:
-            return "Request content type must be JSON"
+            return "Request content type must be JSON", 400
         
         try:
             name = request.json["name"]
@@ -34,15 +34,15 @@ class HumanCollection(Resource):
             relation = request.json["relation"]
             hobby = request.json["hobby"]
         except (ValueError, KeyError):
-            return "Incomplete request - missing fields"
+            return "Incomplete request - missing fields", 400
         
         try:
             age = int(age)
         except (ValueError, TypeError):
-            return "Age must be number"
+            return "Age must be number", 400
         
         if Humans.query.filter_by(name=name).first() is not None:  #katotaanko niin et yhen niminen eläin voi vain olla?
-            return "Human already exists"
+            return "Human already exists", 409
         ## 
         
         new_human = Humans(name=name, 
@@ -54,7 +54,13 @@ class HumanCollection(Resource):
         db.session.add(new_human)
         db.session.commit()
 
-        return "Human added succesfully"
+        from quotesapi.api import api
+        human_uri = api.url_for(HumanItem, human=new_human)
+        headers = {"location": human_uri}
+        #print(headers)
+        return Response(status=201, headers=headers)
+
+        #return "Human added succesfully"
 
 
 class HumanItem(Resource):
@@ -70,7 +76,9 @@ class HumanItem(Resource):
             validate(request.json, Humans.json_schema())
         except ValidationError as e:
             raise BadRequest(description=str(e)) from e
-
+        # Prevent changing the primary key (name)
+        if human.name != request.json["name"]:
+            return "Cannot change primary key (name)", 400
         human.deserialize(request.json)
         try:
             db.session.add(human)

@@ -1,5 +1,7 @@
 from flask import Blueprint
 from flask_restful import Api
+from werkzeug.exceptions import NotFound
+from werkzeug.routing import BaseConverter
 
 from quotesapi.resources.human import HumanCollection, HumanItem
 from quotesapi.resources.creature import CreatureCollection, CreatureItem
@@ -14,6 +16,50 @@ api.add_resource(HumanCollection, "/humans/")
 api.add_resource(AnimalCollection, "/animals/")
 
 # TODO need to do converter for all these before they work
+class CreatureConverter(BaseConverter):
+    
+    def to_python(self, value):
+        creature  = CreatureItem.query.filter_by(name=value).first()  
+        if creature is None:
+            raise NotFound
+        return creature
+    
+    def to_url(self, value):
+        return value.name 
+    
+class HumanConverter(BaseConverter):
+    
+    def to_python(self, value):
+        human  = HumanItem.query.filter_by(name=value).first()  
+        if human is None:
+            raise NotFound
+        return human
+    
+    def to_url(self, value):
+        return value.name
+    
+class AnimalConverter(BaseConverter):
+    
+    def to_python(self, value):
+        animal  = AnimalItem.query.filter_by(name=value).first()
+        if animal is None:
+            raise NotFound
+        return animal
+    
+    def to_url(self, value):
+        return value.name
+    
+class QuoteConverter(BaseConverter):
+    
+    def to_python(self, value):
+        quote  = QuoteItem.query.filter_by(quote=value).first()  
+        if quote is None:
+            raise NotFound
+        return quote
+    
+    def to_url(self, value):
+        return value.name
+
 '''
 api.add_resource(CreatureItem, "/creatures/<creature:creature>/")
 api.add_resource(HumanItem, "/humans/<human:human>/")

@@ -87,7 +87,8 @@ class HumanItem(Resource):
         except IntegrityError as e:
             raise Conflict(
                 409,
-                f"Human with name '{request.json["name"]}' already exists."
+                #f"Human with name '{request.json["name"]}' already exists."
+                f"Human with name \"{request.json['name']}\" already exists."
             ) from e
 
         return Response(status=204)

@@ -87,7 +87,8 @@ class CreatureItem(Resource):
         except IntegrityError as e:
             raise Conflict(
                 409,
-                f"Creature with name '{request.json["name"]}' already exists."
+                #f"Creature with name '{request.json["name"]}' already exists."
+                f"Creature with name \"{request.json['name']}\" already exists."
             ) from e
 
         return Response(status=204)

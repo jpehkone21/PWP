@@ -1,7 +1,9 @@
-'''from setuptools import find_packages, setup
+setup.py
+
+from setuptools import find_packages, setup
 
 setup(
-    name="sensorhub",
+    name="quotesapi",
     version="0.1.0",
     packages=find_packages(),
     include_package_data=True,
@@ -15,4 +17,4 @@ setup(
         "rfc3339-validator",
         "SQLAlchemy",
     ]
-)'''
+)

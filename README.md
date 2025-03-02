@@ -1,5 +1,5 @@
 # PWP SPRING 2025
-# PROJECT NAME
+# PROJECT NAME: Quotes API
 # Group information
 * Student 1. Iina Nikkarikoski inikkari21@student.oulu.fi
 * Student 2. Iiris Kivelä ikivela21@student.oulu.fi
@@ -24,7 +24,7 @@ python prepopulate_database.py
 ```
 
 # Running API (for deadline 3)
-Note: Run all commands from PWP folder
+Note: Run all commands from PWP folder. Actual API implementation is in quotesapi folder.
 
 Install dependencies:
 ```bash
@@ -37,6 +37,7 @@ set FLASK_ENV=development
 flask init-db
 flask run
 ```
+(init-db command only initializes the database but does not prepopulate it. We haven't yet implemented prepopulating)
 
 API starts running on http://127.0.0.1:5000.
 
@@ -57,3 +58,8 @@ Or with test coverage:
 ```bash
 pytest --cov-report term --cov=quotesapi tests/
 ```
+
+# Used materials
+The code in quotesapi is based on: https://github.com/enkwolf/pwp-course-sensorhub-api-example/
+
+and other course material from https://lovelace.oulu.fi/ohjelmoitava-web/ohjelmoitava-web/

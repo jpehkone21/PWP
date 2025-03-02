@@ -1,18 +1,20 @@
-import json
-from flask import request, Response, url_for
+"""
+Animal resource
+"""
+from flask import request, Response
 from flask_restful import Resource
+from jsonschema import validate, ValidationError
+from werkzeug.exceptions import Conflict, BadRequest, UnsupportedMediaType
+from sqlalchemy.exc import IntegrityError
 from quotesapi.models import Animals, Quotes
 from quotesapi import db
-from jsonschema import validate, ValidationError, draft7_format_checker
-from werkzeug.exceptions import NotFound, Conflict, BadRequest, UnsupportedMediaType
-from sqlalchemy.exc import IntegrityError
 
 
 class AnimalCollection(Resource):
 
     def get(self):
         animals = Animals.query.all()
-        animal_list = [{"name": a.name, 
+        animal_list = [{"name": a.name,
                         "age": a.age, 
                         "picture": a.picture,
                         "species": a.species,
@@ -23,10 +25,10 @@ class AnimalCollection(Resource):
         # error cheking
         if request.method != "POST":
             return "POST method required", 415
-    
+
         if not request.is_json:
             return "Request content type must be JSON", 400
-        
+
         try:
             name = request.json["name"]
             age = request.json["age"]
@@ -35,22 +37,21 @@ class AnimalCollection(Resource):
             environment = request.json["environment"]
         except (ValueError, KeyError):
             return "Incomplete request - missing fields", 400
-        
+
         try:
             age = int(age)
         except (ValueError, TypeError):
             return "Age must be number", 400
-        
-        if Animals.query.filter_by(name=name).first() is not None:  #katotaanko niin et yhen niminen eläin voi vain olla?
+
+        if Animals.query.filter_by(name=name).first() is not None:
             return "Animal already exists", 409
-        ## 
-        
-        new_animal = Animals(name=name, 
-                             age=age, 
-                             picture=picture, 
+
+        new_animal = Animals(name=name,
+                             age=age,
+                             picture=picture,
                              species=species,
                              environment=environment)
-        
+
         db.session.add(new_animal)
         db.session.commit()
         from quotesapi.api import api
@@ -87,7 +88,7 @@ class AnimalItem(Resource):
                 409,
                 f"Animal with name '{request.json["name"]}' already exists."
             ) from e
-        
+
         return Response(status=204)
 
 

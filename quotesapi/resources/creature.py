@@ -1,17 +1,19 @@
-import json
-from flask import request, Response, url_for
+"""
+Creature resource
+"""
+from flask import request, Response
 from flask_restful import Resource
+from jsonschema import validate, ValidationError
+from werkzeug.exceptions import Conflict, BadRequest, UnsupportedMediaType
+from sqlalchemy.exc import IntegrityError
 from quotesapi.models import Creatures, Quotes
 from quotesapi import db
-from jsonschema import validate, ValidationError, draft7_format_checker
-from werkzeug.exceptions import NotFound, Conflict, BadRequest, UnsupportedMediaType
-from sqlalchemy.exc import IntegrityError
 
 class CreatureCollection(Resource):
 
     def get(self):
         creatures = Creatures.query.all()
-        creature_list = [{"name": c.name, 
+        creature_list = [{"name": c.name,
                         "age": c.age, 
                         "picture": c.picture,
                         "type": c.type,
@@ -22,10 +24,10 @@ class CreatureCollection(Resource):
         # error cheking
         if request.method != "POST":
             return "POST method required", 415
-    
+
         if not request.is_json:
             return "Request content type must be JSON", 400
-        
+    
         try:
             name = request.json["name"]
             age = request.json["age"]
@@ -34,19 +36,18 @@ class CreatureCollection(Resource):
             special_force = request.json["special_force"]
         except (ValueError, KeyError):
             return "Incomplete request - missing fields", 400
-        
+
         try:
             age = int(age)
         except (ValueError, TypeError):
             return "Age must be number", 400
-        
-        if Creatures.query.filter_by(name=name).first() is not None:  #katotaanko niin et yhen niminen eläin voi vain olla?
+
+        if Creatures.query.filter_by(name=name).first() is not None:
             return "Creature already exists", 409
-        ## 
-        
-        new_creature = Creatures(name=name, 
-                             age=age, 
-                             picture=picture, 
+
+        new_creature = Creatures(name=name,
+                             age=age,
+                             picture=picture,
                              type=type,
                              special_force=special_force)
         
@@ -88,11 +89,11 @@ class CreatureItem(Resource):
                 409,
                 f"Creature with name '{request.json["name"]}' already exists."
             ) from e
-        
+
         return Response(status=204)
 
     def delete(self, creature):
-        
+
         # Delete all creature's quotes before deleting creature
         quotes = Quotes.query.join(Creatures).filter(
                 Quotes.creature_name == creature.name

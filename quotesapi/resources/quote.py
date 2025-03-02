@@ -1,11 +1,13 @@
-import json
-from flask import request, Response, url_for, jsonify
+"""
+Quote resource
+"""
+from flask import request, Response
 from flask_restful import Resource
-from quotesapi.models import Quotes, Animals, Creatures, Humans
-from quotesapi import db, api
-from jsonschema import validate, ValidationError, draft7_format_checker
-from werkzeug.exceptions import NotFound, Conflict, BadRequest, UnsupportedMediaType
+from jsonschema import validate, ValidationError
+from werkzeug.exceptions import Conflict, BadRequest, UnsupportedMediaType
 from sqlalchemy.exc import IntegrityError
+from quotesapi.models import Quotes, Animals, Creatures, Humans
+from quotesapi import db
 
 
 class QuoteCollection(Resource):
@@ -14,7 +16,7 @@ class QuoteCollection(Resource):
         #quotes = Quotes.query.all()
         quotes = []
         quote_list = []
-        
+
         if creature is not None:
             quotes = Quotes.query.join(Creatures).filter(
                 Quotes.creature_name == creature
@@ -32,59 +34,35 @@ class QuoteCollection(Resource):
             #return quotes
         for quote in quotes:
             quote_list.append(quote.serialize())
-        '''
-        
-        
-        # This for-loop is from chatgpt
-        # Determining which entity the quote belongs to
-        for q in quotes:
-            entity = None
-            if q.creature_name:
-                entity = {"type": "creature", "name": q.creature_name}
-            elif q.human_name:
-                entity = {"type": "human", "name": q.human_name}
-            elif q.animal_name:
-                entity = {"type": "animal", "name": q.animal_name}
-                
-            quote_list.append({"id": q.id,
-                            "quote": q.quote,
-                            "mood": q.mood,
-                            "entity": entity})  #en oo varma onko oikein näin liittää quote johonki hahmoon
-        '''
+
         return quote_list
 
     def post(self, animal=None, creature=None, human=None):
         # error cheking
         if request.method != "POST":
-            return "POST method required"
-    
+            return "POST method required", 415
+
         if not request.is_json:
-            return "Request content type must be JSON"
-        
+            return "Request content type must be JSON", 400
+
         try:
             #id = request.json["id"]
             quote = request.json["quote"]
             mood = request.json["mood"]
             #entity = request.json["entity"]
         except (ValueError, KeyError):
-            return "Incomplete request - missing fields"
-        
+            return "Incomplete request - missing fields", 400
+
         try:
             #id = int(id)
             mood = float(mood)
         except (ValueError, TypeError):
-            return "ID and mood must be numbers"
-        
-        if Quotes.query.filter_by(quote=quote).first() is not None:  #katotaanko niin et yhen niminen eläin voi vain olla?
-            return "Quote with this ID already exists"
-        ## 
-        
-        '''new_quote = Quotes(#id=id, 
-                             quote=quote, 
-                             mood=mood, 
-                             #entity=entity
-                            )'''
-        print(creature)
+            return "mood must be number", 400
+
+        if Quotes.query.filter_by(quote=quote).first() is not None:
+            return "Quote with this text already exists", 409
+        new_quote = None
+        # print(creature)
         if animal is not None:
             animal_obj = Animals.query.filter_by(name=animal).first()
             new_quote = Quotes(#id=id, 
@@ -95,20 +73,20 @@ class QuoteCollection(Resource):
                             )
         if creature is not None:
             creature_obj = Creatures.query.filter_by(name=creature).first()
-            new_quote = Quotes(quote=quote, 
+            new_quote = Quotes(quote=quote,
                              mood=mood,
                              creatures=creature_obj
                              #entity=entity
                             )
         if human is not None:
             human_obj = Humans.query.filter_by(name=human).first()
-            new_quote = Quotes(#id=id, 
-                             quote=quote, 
+            new_quote = Quotes(
+                             quote=quote,
                              mood=mood,
                              humans=human_obj
                              #entity=entity
                             )
-        
+
         db.session.add(new_quote)
         db.session.commit()
 
@@ -117,7 +95,7 @@ class QuoteCollection(Resource):
         #print(headers)
         #return Response(status=201, headers=headers)
 
-        return "Quote added succesfully"
+        return "Quote added succesfully", 201
 
 
 class QuoteItem(Resource):
@@ -133,7 +111,8 @@ class QuoteItem(Resource):
             validate(request.json, Quotes.json_schema())
         except ValidationError as e:
             raise BadRequest(description=str(e)) from e
-
+        if Quotes.query.filter_by(quote=request.json["quote"]).first() is not None:
+            return "Quote with this text already exists", 400
         quote.deserialize(request.json)
         try:
             db.session.add(quote)
@@ -143,7 +122,7 @@ class QuoteItem(Resource):
                 409,
                 "Integrityerror."
             ) from e
-        
+
         return Response(status=204)
 
     def delete(self, quote, animal=None, creature=None, human=None):

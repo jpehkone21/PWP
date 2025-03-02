@@ -1,9 +1,9 @@
+"""
+Url mappings
+"""
+
 from flask import Blueprint
 from flask_restful import Api
-from werkzeug.exceptions import NotFound
-from werkzeug.routing import BaseConverter
-
-from quotesapi.models import Creatures, Humans, Animals, Quotes
 from quotesapi.resources.human import HumanCollection, HumanItem
 from quotesapi.resources.creature import CreatureCollection, CreatureItem
 from quotesapi.resources.animal import AnimalCollection, AnimalItem
@@ -25,11 +25,11 @@ api.add_resource(AnimalItem, "/animals/<animal:animal>/")
 api.add_resource(QuoteCollection,
     "/quotes/",
     "/creatures/<creature>/quotes/",
-    "/humans/<humans>/quotes/",
+    "/humans/<human>/quotes/",
     "/animals/<animal>/quotes/"
 )
-api.add_resource(QuoteItem, 
+api.add_resource(QuoteItem,
     "/creatures/<creature>/quotes/<quote:quote>/",
-    "/humans/<humans>/quotes/<quote:quote>/",
+    "/humans/<human>/quotes/<quote:quote>/",
     "/animals/<animal>/quotes/<quote:quote>/"
 )

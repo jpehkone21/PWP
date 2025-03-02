@@ -1,7 +1,7 @@
-import os
-from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.exc import IntegrityError
+"""
+Database models are defined here
+"""
+
 from sqlalchemy.engine import Engine
 from sqlalchemy import event
 import click
@@ -20,7 +20,7 @@ class Creatures(db.Model):
     picture = db.Column(db.String(256), nullable=True)
     type=db.Column(db.String(128), nullable=True)
     special_force=db.Column(db.String(128), nullable=True)
-    
+
     quotes = db.relationship("Quotes", back_populates="creatures")
 
     def serialize(self):
@@ -79,7 +79,7 @@ class Humans(db.Model):
     picture = db.Column(db.String(256), nullable=True)
     relation=db.Column(db.String(128), nullable=True)
     hobby=db.Column(db.String(128), nullable=True)
-    
+
     quotes = db.relationship("Quotes", back_populates="humans")
 
     def serialize(self):
@@ -137,7 +137,7 @@ class Animals(db.Model):
     picture = db.Column(db.String(256), nullable=True)
     species=db.Column(db.String(128), nullable=True)
     environment=db.Column(db.String(128), nullable=True)
-    
+
     quotes = db.relationship("Quotes", back_populates="animals")  
 
     def serialize(self):
@@ -193,11 +193,11 @@ class Quotes(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     quote = db.Column(db.String(256), nullable=False, unique=True)
     mood = db.Column(db.Float, nullable=False)
-    
+
     creature_name = db.Column(db.String, db.ForeignKey('creatures.name'), nullable=True)
     human_name = db.Column(db.String, db.ForeignKey('humans.name'), nullable=True)
     animal_name = db.Column(db.String, db.ForeignKey('animals.name'), nullable=True)
-    
+
     # This constraint is from chatgpt
     # Enforce that only one name is provided
     __table_args__ = (
@@ -216,14 +216,6 @@ class Quotes(db.Model):
             "quote" : self.quote,
             "mood" : self.mood
         }
-        '''
-        if self.creature_name:
-            doc["creature_name"] = self.creature_name
-        elif self.human_name:
-            doc["human_name"] = self.human_name
-        elif self.animal_name:
-            doc["animal_name"] = self.animal_name
-        '''
         return doc
 
     def deserialize(self, doc):
@@ -247,7 +239,7 @@ class Quotes(db.Model):
             "type": "number"
         }
         return schema
-   
+
 
 @click.command("init-db")
 @with_appcontext

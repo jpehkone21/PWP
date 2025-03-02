@@ -1,18 +1,20 @@
-import json
-from flask import request, Response, url_for
+"""
+Human resource
+"""
+from flask import request, Response
 from flask_restful import Resource
+from jsonschema import validate, ValidationError
+from werkzeug.exceptions import Conflict, BadRequest, UnsupportedMediaType
+from sqlalchemy.exc import IntegrityError
 from quotesapi.models import Humans, Quotes
 from quotesapi import db
-from jsonschema import validate, ValidationError, draft7_format_checker
-from werkzeug.exceptions import NotFound, Conflict, BadRequest, UnsupportedMediaType
-from sqlalchemy.exc import IntegrityError
 
 
 class HumanCollection(Resource):
 
     def get(self):
         humans = Humans.query.all()
-        human_list = [{"name": h.name, 
+        human_list = [{"name": h.name,
                         "age": h.age, 
                         "picture": h.picture,
                         "relation": h.relation,
@@ -23,10 +25,10 @@ class HumanCollection(Resource):
         # error cheking
         if request.method != "POST":
             return "POST method required", 415
-    
+
         if not request.is_json:
             return "Request content type must be JSON", 400
-        
+
         try:
             name = request.json["name"]
             age = request.json["age"]
@@ -35,22 +37,21 @@ class HumanCollection(Resource):
             hobby = request.json["hobby"]
         except (ValueError, KeyError):
             return "Incomplete request - missing fields", 400
-        
+
         try:
             age = int(age)
         except (ValueError, TypeError):
             return "Age must be number", 400
-        
-        if Humans.query.filter_by(name=name).first() is not None:  #katotaanko niin et yhen niminen eläin voi vain olla?
+
+        if Humans.query.filter_by(name=name).first() is not None:
             return "Human already exists", 409
-        ## 
-        
-        new_human = Humans(name=name, 
-                             age=age, 
-                             picture=picture, 
+
+        new_human = Humans(name=name,
+                             age=age,
+                             picture=picture,
                              relation=relation,
                              hobby=hobby)
-        
+
         db.session.add(new_human)
         db.session.commit()
 
@@ -88,7 +89,7 @@ class HumanItem(Resource):
                 409,
                 f"Human with name '{request.json["name"]}' already exists."
             ) from e
-        
+
         return Response(status=204)
 
     def delete(self, human):

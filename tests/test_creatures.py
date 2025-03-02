@@ -1,21 +1,19 @@
+"""
+Test for Creatures resource
+"""
+
 import json
-import os
 import pytest
-import tempfile
-import time
-from datetime import datetime
-from flask.testing import FlaskClient
-from jsonschema import validate
 from sqlalchemy.engine import Engine
 from sqlalchemy import event
-from sqlalchemy.exc import IntegrityError, StatementError
 from werkzeug.datastructures import Headers
 
 from quotesapi import create_app, db
-from quotesapi.models import Creatures, Animals, Humans, Quotes  
+from quotesapi.models import Creatures
 
 @event.listens_for(Engine, "connect")
 def set_sqlite_pragma(dbapi_connection, connection_record):
+    ''' Connect database '''
     cursor = dbapi_connection.cursor()
     cursor.execute("PRAGMA foreign_keys=ON")
     cursor.close()
@@ -37,18 +35,20 @@ def client():
 def _populate_db():
     for i in range(1, 4):
         c = Creatures(
-            name = "creature-{}".format(i),
+            name = f"creature-{i}",
             age = 30 + i
         )
-        db.session.add(c)     
+        db.session.add(c)
     db.session.commit()
 
 
-class TestCreaturesCollection(object):
+class TestCreaturesCollection():
+    ''' Tests for CreaturesCollection resource '''
     
     RESOURCE_URL = "/api/creatures/"
 
     def test_get(self, client):
+        ''' Test GET method '''
         #print("test get creatures")
         resp = client.get(self.RESOURCE_URL)
         assert resp.status_code == 200
@@ -59,40 +59,49 @@ class TestCreaturesCollection(object):
         assert body[2]["name"] == "creature-3"
 
     def test_post(self, client):
+        ''' Test POST method '''
         valid = {"name": "creature-4",
                  "age": 999,
                  "picture": ":)",
                  "type": "alien",
                  "special_force": "laser eyes"
                  }
-        
+
         # test with wrong content type
         resp = client.post(self.RESOURCE_URL, data="notjson")
         assert resp.status_code in (400, 415)
-        
+
+        # test with age not being number
+        valid["age"] = "twenty"
+        resp = client.post(self.RESOURCE_URL, json=valid)
+        assert resp.status_code == 400
+
         # test with valid and see that it exists afterward
+        valid["age"] = 999
         resp = client.post(self.RESOURCE_URL, json=valid)
         assert resp.status_code == 201
         assert resp.headers["Location"].endswith(self.RESOURCE_URL + valid["name"] + "/")
         resp = client.get(resp.headers["Location"])
         assert resp.status_code == 200
-        
+
         # send same data again for 409
         resp = client.post(self.RESOURCE_URL, json=valid)
         assert resp.status_code == 409
-        
+
         # remove name field for 400
         valid.pop("name")
         resp = client.post(self.RESOURCE_URL, json=valid)
         assert resp.status_code == 400
-          
-        
+
+
 class TestCreatureItem(object):
-    
+    ''' Tests for CreatureItem resource '''
+
     RESOURCE_URL = "/api/creatures/creature-1/"
     INVALID_URL = "/api/creatures/non-creature/"
-    
+
     def test_get(self, client):
+        ''' Test GET method '''
         resp = client.get(self.RESOURCE_URL)
         assert resp.status_code == 200
         body = json.loads(resp.data)
@@ -101,40 +110,45 @@ class TestCreatureItem(object):
         assert resp.status_code == 404
 
     def test_put(self, client):
+        ''' Test PUT method '''
         valid = {"name": "creature-1",
                  "age": 999,
                  "picture": ":)",
                  "type": "alien",
                  "special_force": "flying"
                  }
-        
+
         # test with wrong content type
-        resp = client.put(self.RESOURCE_URL, data="notjson", headers=Headers({"Content-Type": "text"}))
+        resp = client.put(
+            self.RESOURCE_URL,
+            data="notjson",
+            headers=Headers({"Content-Type": "text"})
+            )
         assert resp.status_code in (400, 415)
-        
+
         resp = client.put(self.INVALID_URL, json=valid)
         assert resp.status_code == 404
-        
+
         # test with another creature's name
         valid["name"] = "creature-2"
         resp = client.put(self.RESOURCE_URL, json=valid)
         assert resp.status_code == 400
-        
+
         # test with valid (only change special force)
         valid["name"] = "creature-1"
         resp = client.put(self.RESOURCE_URL, json=valid)
         assert resp.status_code == 204
-        
+
         # remove field for 400
         valid.pop("name")
         resp = client.put(self.RESOURCE_URL, json=valid)
         assert resp.status_code == 400
-        
+
     def test_delete(self, client):
+        ''' Test DELETE method'''
         resp = client.delete(self.RESOURCE_URL)
         assert resp.status_code == 204
         resp = client.delete(self.RESOURCE_URL)
         assert resp.status_code == 404
         resp = client.delete(self.INVALID_URL)
         assert resp.status_code == 404
- 

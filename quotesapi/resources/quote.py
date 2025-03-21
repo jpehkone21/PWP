@@ -11,8 +11,14 @@ from quotesapi import db
 
 
 class QuoteCollection(Resource):
+    """
+    Implements API operations GET (retrieving all quotes) and POST
+    """
 
     def get(self, animal=None, creature=None, human=None):
+        """
+        Retrieves all quotes in the database and returns them as a list of dictionaries
+        """
         #quotes = Quotes.query.all()
         quotes = []
         quote_list = []
@@ -38,6 +44,9 @@ class QuoteCollection(Resource):
         return quote_list
 
     def post(self, animal=None, creature=None, human=None):
+        """
+        Posting a new quote for specific character/human/animal
+        """
         # error cheking
         if request.method != "POST":
             return "POST method required", 415
@@ -65,10 +74,10 @@ class QuoteCollection(Resource):
         # print(creature)
         if animal is not None:
             animal_obj = Animals.query.filter_by(name=animal).first()
-            new_quote = Quotes(#id=id, 
-                             quote=quote, 
+            new_quote = Quotes(#id=id,
+                             quote=quote,
                              mood=mood,
-                             animals=animal_obj 
+                             animals=animal_obj
                              #entity=entity
                             )
         if creature is not None:
@@ -99,11 +108,20 @@ class QuoteCollection(Resource):
 
 
 class QuoteItem(Resource):
+    """
+    Implements API operations GET, PUT and DELETE
+    """
 
     def get(self, quote, animal=None, creature=None, human=None):
+        """
+        Retrieves details of a specific quote
+        """
         return quote.serialize()
 
     def put(self, quote, animal=None, creature=None, human=None):
+        """
+        Updates the details of the specific quote
+        """
         if not request.json:
             raise UnsupportedMediaType
 
@@ -126,6 +144,9 @@ class QuoteItem(Resource):
         return Response(status=204)
 
     def delete(self, quote, animal=None, creature=None, human=None):
+        """
+        Deletes the quote from the database
+        """
         db.session.delete(quote)
         db.session.commit()
 

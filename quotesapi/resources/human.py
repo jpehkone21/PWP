@@ -7,12 +7,19 @@ from jsonschema import validate, ValidationError
 from werkzeug.exceptions import Conflict, BadRequest, UnsupportedMediaType
 from sqlalchemy.exc import IntegrityError
 from quotesapi.models import Humans, Quotes
+from quotesapi.api import api
 from quotesapi import db
 
 
 class HumanCollection(Resource):
+    """
+    Implements API operations GET (retrieving all humans) and POST
+    """
 
     def get(self):
+        """
+        Retrieves all humans in the database and returns them as a list of dictionaries
+        """
         humans = Humans.query.all()
         human_list = [{"name": h.name,
                         "age": h.age, 
@@ -22,6 +29,9 @@ class HumanCollection(Resource):
         return human_list
 
     def post(self):
+        """
+        Posting a new human with all of its information to the database
+        """
         # error cheking
         if request.method != "POST":
             return "POST method required", 415
@@ -55,7 +65,7 @@ class HumanCollection(Resource):
         db.session.add(new_human)
         db.session.commit()
 
-        from quotesapi.api import api
+        #from quotesapi.api import api
         human_uri = api.url_for(HumanItem, human=new_human)
         headers = {"location": human_uri}
         #print(headers)
@@ -63,13 +73,21 @@ class HumanCollection(Resource):
 
         #return "Human added succesfully"
 
-
 class HumanItem(Resource):
+    """
+    Implements API operations GET, PUT and DELETE
+    """
 
     def get(self, human):
+        """
+        Retrieves details of a specific human
+        """
         return human.serialize()
 
     def put(self, human):
+        """
+        Updates the details of the specific human
+        """
         if not request.json:
             raise UnsupportedMediaType
 
@@ -94,6 +112,9 @@ class HumanItem(Resource):
         return Response(status=204)
 
     def delete(self, human):
+        """
+        Deletes the human from the database
+        """
         # Delete all humans's quotes before deleting humanature
         quotes = Quotes.query.join(Humans).filter(
                 Quotes.creature_name == human.name

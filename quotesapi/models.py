@@ -10,11 +10,17 @@ from quotesapi import db
 
 @event.listens_for(Engine, "connect")
 def set_sqlite_pragma(dbapi_connection, connection_record):
+    """
+    Enables foreign key support in SQLite
+    """
     cursor = dbapi_connection.cursor()
     cursor.execute("PRAGMA foreign_keys=ON")
     cursor.close()
 
 class Creatures(db.Model):
+    """ 
+    Represents the creature in the database with set attributes
+    """
     name = db.Column(db.String(32), nullable=False, unique=True, primary_key=True)
     age = db.Column(db.Integer, nullable=True)
     picture = db.Column(db.String(256), nullable=True)
@@ -24,6 +30,9 @@ class Creatures(db.Model):
     quotes = db.relationship("Quotes", back_populates="creatures")
 
     def serialize(self):
+        """
+        Converts the object to a dictionary representation
+        """
         doc = {
             "name" : self.name,
             "age" : self.age,
@@ -35,6 +44,9 @@ class Creatures(db.Model):
         return doc
 
     def deserialize(self, doc):
+        """
+        Populates the object's attributes from the dictionary
+        """
         self.name = doc["name"]
         self.age = doc.get("age")
         self.picture = doc.get("picture")
@@ -45,6 +57,10 @@ class Creatures(db.Model):
 
     @staticmethod
     def json_schema():
+        """
+        Provides the JSON schema for the object by describing the stucture 
+        and validation rules
+        """
         schema = {
             "type": "object",
             "required": ["name"],
@@ -74,6 +90,10 @@ class Creatures(db.Model):
         return schema
 
 class Humans(db.Model):
+    """ 
+    Represents the human in the database with set attributes
+    """
+
     name = db.Column(db.String(32), nullable=False, unique=True, primary_key=True)
     age = db.Column(db.Integer, nullable=True)
     picture = db.Column(db.String(256), nullable=True)
@@ -83,17 +103,23 @@ class Humans(db.Model):
     quotes = db.relationship("Quotes", back_populates="humans")
 
     def serialize(self):
+        """
+        Converts the object to a dictionary representation
+        """
         doc = {
             "name" : self.name,
             "age" : self.age,
             "picture" : self.picture,
             "relation" : self.relation,
             "hobby" : self.hobby,
-            #"quotes" :  self.quotes.serialize() # en tiiä onko oikein 
+            #"quotes" :  self.quotes.serialize() # en tiiä onko oikein
         }
         return doc
 
     def deserialize(self, doc):
+        """
+        Populates the object's attributes from the dictionary
+        """
         self.name = doc["name"]
         self.age = doc.get("age")
         self.picture = doc.get("picture")
@@ -103,6 +129,10 @@ class Humans(db.Model):
 
     @staticmethod
     def json_schema():
+        """
+        Provides the JSON schema for the object by describing the stucture 
+        and validation rules
+        """
         schema = {
             "type": "object",
             "required": ["name"],
@@ -132,26 +162,36 @@ class Humans(db.Model):
         return schema
 
 class Animals(db.Model):
+    """ 
+    Represents the animal in the database with set attributes
+    """
+
     name = db.Column(db.String(32), nullable=False, unique=True, primary_key=True)
     age = db.Column(db.Integer, nullable=True)
     picture = db.Column(db.String(256), nullable=True)
     species=db.Column(db.String(128), nullable=True)
     environment=db.Column(db.String(128), nullable=True)
 
-    quotes = db.relationship("Quotes", back_populates="animals")  
+    quotes = db.relationship("Quotes", back_populates="animals")
 
     def serialize(self):
+        """
+        Converts the object to a dictionary representation
+        """
         doc = {
             "name" : self.name,
             "age" : self.age,
             "picture" : self.picture,
             "species" : self.species,
             "environment" : self.environment,
-            #"quotes" :  self.quotes.serialize() # en tiiä onko oikein 
+            #"quotes" :  self.quotes.serialize() # en tiiä onko oikein
         }
         return doc
 
     def deserialize(self, doc):
+        """
+        Populates the object's attributes from the dictionary
+        """
         self.name = doc["name"]
         self.age = doc.get("age")
         self.picture = doc.get("picture")
@@ -161,6 +201,10 @@ class Animals(db.Model):
 
     @staticmethod
     def json_schema():
+        """
+        Provides the JSON schema for the object by describing the stucture 
+        and validation rules
+        """
         schema = {
             "type": "object",
             "required": ["name"],
@@ -190,6 +234,10 @@ class Animals(db.Model):
         return schema
 
 class Quotes(db.Model):
+    """ 
+    Represents the quote in the database with set attributes
+    """
+
     id = db.Column(db.Integer, primary_key=True)
     quote = db.Column(db.String(256), nullable=False, unique=True)
     mood = db.Column(db.Float, nullable=False)
@@ -202,7 +250,9 @@ class Quotes(db.Model):
     # Enforce that only one name is provided
     __table_args__ = (
         db.CheckConstraint(
-            "(creature_name IS NOT NULL) + (human_name IS NOT NULL) + (animal_name IS NOT NULL) = 1",
+            "(creature_name IS NOT NULL) +"
+            "(human_name IS NOT NULL) + "
+            "(animal_name IS NOT NULL) = 1",
             name="check_only_one_entity"
         ),
     )
@@ -212,6 +262,9 @@ class Quotes(db.Model):
     animals = db.relationship("Animals", back_populates="quotes")
 
     def serialize(self):
+        """
+        Converts the object to a dictionary representation
+        """
         doc = {
             "quote" : self.quote,
             "mood" : self.mood
@@ -219,11 +272,18 @@ class Quotes(db.Model):
         return doc
 
     def deserialize(self, doc):
+        """
+        Populates the object's attributes from the dictionary
+        """
         self.quote = doc["quote"]
         self.mood = doc["mood"]
 
     @staticmethod
     def json_schema():
+        """
+        Provides the JSON schema for the object by describing the stucture 
+        and validation rules
+        """
         schema = {
             "type": "object",
             "required": ["quote", "mood"],
@@ -244,4 +304,7 @@ class Quotes(db.Model):
 @click.command("init-db")
 @with_appcontext
 def init_db_command():
+    """
+    Initializes the database by creating the tables
+    """
     db.create_all()

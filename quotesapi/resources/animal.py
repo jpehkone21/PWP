@@ -8,11 +8,18 @@ from werkzeug.exceptions import Conflict, BadRequest, UnsupportedMediaType
 from sqlalchemy.exc import IntegrityError
 from quotesapi.models import Animals, Quotes
 from quotesapi import db
+from quotesapi.api import api
 
 
 class AnimalCollection(Resource):
+    """
+    Implements API operations GET (retrieving all animals) and POST
+    """
 
     def get(self):
+        """
+        Retrieves all animals in the database and returns them as a list of dictionaries
+        """
         animals = Animals.query.all()
         animal_list = [{"name": a.name,
                         "age": a.age, 
@@ -22,6 +29,9 @@ class AnimalCollection(Resource):
         return animal_list
 
     def post(self):
+        """
+        Posting a new animal with all of its information to the database
+        """
         # error cheking
         if request.method != "POST":
             return "POST method required", 415
@@ -54,7 +64,7 @@ class AnimalCollection(Resource):
 
         db.session.add(new_animal)
         db.session.commit()
-        from quotesapi.api import api
+        #from quotesapi.api import api
         animal_uri = api.url_for(AnimalItem, animal=new_animal)
         headers = {"location": animal_uri}
         #print(headers)
@@ -63,11 +73,20 @@ class AnimalCollection(Resource):
         #return "Animal added succesfully"
 
 class AnimalItem(Resource):
+    """
+    Implements API operations GET, PUT and DELETE
+    """
 
     def get(self, animal):
+        """
+        Retrieves details of a specific animal
+        """
         return animal.serialize()
 
     def put(self, animal):
+        """
+        Updates the details of the specific animal
+        """
         if not request.json:
             raise UnsupportedMediaType
 
@@ -94,6 +113,9 @@ class AnimalItem(Resource):
 
 
     def delete(self, animal):
+        """
+        Deletes the animal from the database
+        """
         # Delete all animal's quotes before deleting animal
         quotes = Quotes.query.join(Animals).filter(
                 Quotes.creature_name == animal.name

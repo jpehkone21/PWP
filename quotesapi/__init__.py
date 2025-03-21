@@ -4,9 +4,6 @@ Initializing the application
 import os
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-from quotesapi.utils import CreatureConverter, HumanConverter, AnimalConverter, QuoteConverter
-from . import models
-from . import api
 
 db = SQLAlchemy()
 
@@ -35,9 +32,9 @@ def create_app(test_config=None):
         pass
 
     db.init_app(app)
-    #from . import models
-    #from . import api
-    #from quotesapi.utils import CreatureConverter, HumanConverter, AnimalConverter, QuoteConverter
+    from . import models
+    from . import api
+    from quotesapi.utils import CreatureConverter, HumanConverter, AnimalConverter, QuoteConverter
 
     app.url_map.converters["creature"] = CreatureConverter
     app.url_map.converters["human"] = HumanConverter

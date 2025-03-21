@@ -8,7 +8,6 @@ from werkzeug.exceptions import Conflict, BadRequest, UnsupportedMediaType
 from sqlalchemy.exc import IntegrityError
 from quotesapi.models import Animals, Quotes
 from quotesapi import db
-from quotesapi.api import api
 
 
 class AnimalCollection(Resource):
@@ -64,7 +63,7 @@ class AnimalCollection(Resource):
 
         db.session.add(new_animal)
         db.session.commit()
-        #from quotesapi.api import api
+        from quotesapi.api import api
         animal_uri = api.url_for(AnimalItem, animal=new_animal)
         headers = {"location": animal_uri}
         #print(headers)

@@ -7,7 +7,6 @@ from jsonschema import validate, ValidationError
 from werkzeug.exceptions import Conflict, BadRequest, UnsupportedMediaType
 from sqlalchemy.exc import IntegrityError
 from quotesapi.models import Humans, Quotes
-from quotesapi.api import api
 from quotesapi import db
 
 
@@ -65,7 +64,7 @@ class HumanCollection(Resource):
         db.session.add(new_human)
         db.session.commit()
 
-        #from quotesapi.api import api
+        from quotesapi.api import api
         human_uri = api.url_for(HumanItem, human=new_human)
         headers = {"location": human_uri}
         #print(headers)

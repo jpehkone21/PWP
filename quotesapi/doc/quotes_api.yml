@@ -1,0 +1,132 @@
+---
+openapi: 3.0.3
+servers:
+- url: /api
+components:
+  schemas:
+    Creature:
+      type: object
+      required:
+        - name
+      additionalProperties: false
+      properties:
+        name:
+          description: "Creature's unique name"
+          type: string
+        age:
+          description: "Age of the creature"
+          type: integer
+        picture:
+          description: "ASCII picture of the creature"
+          type: string
+        type:
+          description: "Type of the creature"
+          type: string
+        special_force:
+          description: "Special force of the creature"
+          type: string
+    Human:
+      type: object
+      required:
+        - name
+      additionalProperties: false
+      properties:
+        name:
+          description: "Human's unique name"
+          type: string
+        age:
+          description: "Age of the human"
+          type: integer
+        picture:
+          description: "ASCII picture of the human"
+          type: string
+        relation:
+          description: "What relation does the human have, e.g. sister"
+          type: string
+        hobby:
+          description: "The human's hobby"
+          type: string
+    Animal:
+      type: object
+      required:
+        - name
+      additionalProperties: false
+      properties:
+        name:
+          description: "Animal's unique name"
+          type: string
+        age:
+          description: "Age of the animal"
+          type: integer
+        picture:
+          description: "ASCII picture of the animal"
+          type: string
+        species:
+          description: "Species of the animal"
+          type: string
+        environment:
+          description: "Environment where the animal lives"
+          type: string
+
+info:
+  title: Quotes api
+  version: 0.0.1
+  description: |
+    An API where user can create unique characters and add quotes for them.
+  termsOfService: http://totally.not.placehold.er/
+  contact:
+    url: http://totally.not.placehold.er/
+    email: example@email.com
+    name: Someone
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+paths:
+  /creatures/:
+    get:
+      description: Get the list of creatures
+      responses:
+        '200':
+          description: List of creatures
+          content:
+            application/json:
+              example:
+                - name: "Drako"
+                  age: 150
+                  picture: "ASCII dragon"
+                  type: "Dragon"
+                  special_force: "Fire breath"
+
+                - name: "Zypher"
+                  age: 300
+                  picture: "ASCII ghost"
+                  type: "Ghost"
+                  special_force: "Invisibility"
+    post:
+      description: Create a new creature
+      requestBody:
+        description: JSON document that contains data for new creature
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Creature'
+            example:
+              name: "Drako"
+              age: 150
+              picture: "ASCII dragon"
+              type: "Dragon"
+              special_force: "Fire breath"
+      responses:
+        '201':
+          description: The creature was created successfully
+          headers:
+            Location: 
+              description: URI of the new creature
+              schema: 
+                type: string
+        '400':
+          description: The request body was not valid
+        '409':
+          description: A creature with the same handle already exists
+        '415':
+          description: Wrong media type was used

@@ -4,6 +4,7 @@ Initializing the application
 import os
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+from flasgger import Swagger, swag_from
 
 db = SQLAlchemy()
 
@@ -25,6 +26,13 @@ def create_app(test_config=None):
         app.config.from_pyfile("config.py", silent=True)
     else:
         app.config.from_mapping(test_config)
+
+    app.config["SWAGGER"] = {
+        "title": "Quotes API",
+        "openapi": "3.0.4",
+        "uiversion": 3,
+    }
+    swagger = Swagger(app, template_file="doc/quotes_api.yml")
 
     try:
         os.makedirs(app.instance_path)

@@ -82,6 +82,7 @@ info:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
 paths:
+  # CREATURE COLLECTION ----------------------------------------------------------------------------
   /creatures/:
     get:
       description: Get the list of creatures
@@ -130,3 +131,274 @@ paths:
           description: A creature with the same handle already exists
         '415':
           description: Wrong media type was used
+  
+  # CREATURE ITEM
+  /creatures/{name}:
+    get:
+      description: Retrieve details of a specific creature
+      parameters:
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Details of the creature
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Creature'
+        '404':
+          description: Creature not found
+    put:
+      description: Update an existing creature
+      parameters:
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: JSON document that contains updated data for the creature
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Creature'
+      responses:
+        '204':
+          description: Creature updated successfully
+        '400':
+          description: Cannot change primary key
+        '409':
+          description: Creature with the new name already exists
+        '415':
+          description: Unsupported media type
+    delete:
+      description: Delete an creature from the database
+      parameters:
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Creature deleted successfully
+        '404':
+          description: Creature not found      
+
+  # HUMAN COLLECTION -----------------------------------------------------------------------
+  /humans/:
+    get:
+      description: Get the list of humans
+      responses:
+        '200':
+          description: List of humans
+          content:
+            application/json:
+              example:
+                - name: "Marie"
+                  age: 29
+                  picture: "ASCII human"
+                  relation: "Aunt"
+                  hobby: "Gardening"
+
+                - name: "Dave"
+                  age: 45
+                  picture: "ASCII human"
+                  relation: "Dad"
+                  hobby: "Building legos"
+    post:
+      description: Create a new human
+      requestBody:
+        description: JSON document that contains data for new human
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Human'
+            example:
+              name: "Marie"
+              age: 29
+              picture: "ASCII human"
+              relation: "Aunt"
+              hobby: "Gardening"
+      responses:
+        '201':
+          description: The human was created successfully
+          headers:
+            Location: 
+              description: URI of the new human
+              schema: 
+                type: string
+        '400':
+          description: The request body was not valid
+        '409':
+          description: A human with the same handle already exists
+        '415':
+          description: Wrong media type was used
+
+  # HUMAN ITEM
+  /humans/{name}:
+    get:
+      description: Retrieve details of a specific human
+      parameters:
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Details of the human
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Human'
+        '404':
+          description: Human not found
+    put:
+      description: Update an existing human
+      parameters:
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: JSON document that contains updated data for the human
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Human'
+      responses:
+        '204':
+          description: Human updated successfully
+        '400':
+          description: Cannot change primary key
+        '409':
+          description: Human with the new name already exists
+        '415':
+          description: Unsupported media type
+    delete:
+      description: Delete an human from the database
+      parameters:
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Human deleted successfully
+        '404':
+          description: Human not found      
+  
+  # ANIMAL COLLECTION ------------------------------------------------------------------ 
+  /animals/:
+    get:
+      description: Get the list of animals
+      responses:
+        '200':
+          description: List of animals
+          content:
+            application/json:
+              example:
+                - name: "Apu"
+                  age: 3
+                  picture: "ASCII monkey"
+                  species: "Monkey"
+                  environment: "Rainforest"
+
+                - name: "Tinky"
+                  age: 5
+                  picture: "ASCII dog"
+                  species: "Dog"
+                  environment: "House"
+    post:
+      description: Create a new animal
+      requestBody:
+        description: JSON document that contains data for new animal
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Animal'
+            example:
+              name: "Tinky"
+              age: 5
+              picture: "ASCII dog"
+              species: "dog"
+              environment: "House"
+      responses:
+        '201':
+          description: The animal was created successfully
+          headers:
+            Location: 
+              description: URI of the new animal
+              schema: 
+                type: string
+        '400':
+          description: The request body was not valid
+        '409':
+          description: A animal with the same handle already exists
+        '415':
+          description: Wrong media type was used
+
+  # ANIMAL ITEM
+  /animals/{name}:
+    get:
+      description: Retrieve details of a specific animal
+      parameters:
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Details of the animal
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Animal'
+        '404':
+          description: Animal not found
+    put:
+      description: Update an existing animal
+      parameters:
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: JSON document that contains updated data for the animal
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Animal'
+      responses:
+        '204':
+          description: Animal updated successfully
+        '400':
+          description: Cannot change primary key
+        '409':
+          description: Animal with the new name already exists
+        '415':
+          description: Unsupported media type
+    delete:
+      description: Delete an animal from the database
+      parameters:
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Animal deleted successfully
+        '404':
+          description: Animal not found      

@@ -67,6 +67,29 @@ components:
         environment:
           description: "Environment where the animal lives"
           type: string
+    Quote:
+      type: object
+      required:
+        - quote
+        - mood
+      additionalProperties: false
+      properties:
+        quote:
+          description: "The text of the quote"
+          type: string
+        mood:
+          description: "Mood of the quote (numerical scale)"
+          type: number
+          format: float
+        animal:
+          description: "Reference to the associated animal"
+          type: string
+        creature:
+          description: "Reference to the associated creature"
+          type: string
+        human:
+          description: "Reference to the associated human"
+          type: string
 
 info:
   title: Quotes api
@@ -420,3 +443,236 @@ paths:
           description: Animal deleted successfully
         '404':
           description: Animal not found      
+
+  # QUOTE COLLECTION ----------------------------------------------------------------------------
+  /quotes/:
+    get:
+      description: Get the list of all quotes
+      responses:
+        '200':
+          description: List of all quotes
+          content:
+            application/json:
+              example:
+                - quote: "The early bird catches the worm."
+                  mood: 8.5
+                  animal: "Bird"
+                - quote: "To be or not to be, that is the question."
+                  mood: 9.0
+                  human: "Shakespeare"
+                - quote: "Fire is the test of gold."
+                  mood: 7.0
+                  creature: "Dragon"
+    post:
+      description: Create a new quote
+      requestBody:
+        description: JSON document that contains data for the new quote
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                quote:
+                  type: string
+                  description: "The text of the quote"
+                mood:
+                  type: number
+                  description: "Mood rating of the quote"
+                animal:
+                  type: string
+                  description: "The animal associated with the quote"
+                creature:
+                  type: string
+                  description: "The creature associated with the quote"
+                human:
+                  type: string
+                  description: "The human associated with the quote"
+              required:
+                - quote
+                - mood
+      responses:
+        '201':
+          description: The quote was created successfully
+          headers:
+            Location:
+              description: URI of the newly created quote
+              schema:
+                type: string
+        '400':
+          description: The request body was not valid
+        '409':
+          description: A quote with the same text already exists
+        '415':
+          description: Unsupported media type
+
+  # QUOTE ITEM ----------------------------------------------------------------------------
+  /creatures/{creature}/quotes/:
+    get:
+      description: Retrieve all quotes for a specific creature
+      parameters:
+        - name: creature
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of quotes for the specified creature
+          content:
+            application/json:
+              example:
+                - quote: "Fire is the test of gold."
+                  mood: 7.0
+                  creature: "Dragon"
+    post:
+      description: Create a new quote for a specific creature
+      parameters:
+        - name: creature
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: JSON document that contains data for the new quote
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                quote:
+                  type: string
+                  description: "The text of the quote"
+                mood:
+                  type: number
+                  description: "Mood rating of the quote"
+              required:
+                - quote
+                - mood
+      responses:
+        '201':
+          description: The quote was created successfully
+          headers:
+            Location:
+              description: URI of the newly created quote
+              schema:
+                type: string
+        '400':
+          description: The request body was not valid
+        '409':
+          description: A quote with the same text already exists
+        '415':
+          description: Unsupported media type
+
+  /humans/{human}/quotes/:
+    get:
+      description: Retrieve all quotes for a specific human
+      parameters:
+        - name: human
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of quotes for the specified human
+          content:
+            application/json:
+              example:
+                - quote: "To be or not to be, that is the question."
+                  mood: 9.0
+                  human: "Shakespeare"
+    post:
+      description: Create a new quote for a specific human
+      parameters:
+        - name: human
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: JSON document that contains data for the new quote
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                quote:
+                  type: string
+                  description: "The text of the quote"
+                mood:
+                  type: number
+                  description: "Mood rating of the quote"
+              required:
+                - quote
+                - mood
+      responses:
+        '201':
+          description: The quote was created successfully
+          headers:
+            Location:
+              description: URI of the newly created quote
+              schema:
+                type: string
+        '400':
+          description: The request body was not valid
+        '409':
+          description: A quote with the same text already exists
+        '415':
+          description: Unsupported media type
+
+  /animals/{animal}/quotes/:
+    get:
+      description: Retrieve all quotes for a specific animal
+      parameters:
+        - name: animal
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of quotes for the specified animal
+          content:
+            application/json:
+              example:
+                - quote: "The early bird catches the worm."
+                  mood: 8.5
+                  animal: "Bird"
+    post:
+      description: Create a new quote for a specific animal
+      parameters:
+        - name: animal
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: JSON document that contains data for the new quote
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                quote:
+                  type: string
+                  description: "The text of the quote"
+                mood:
+                  type: number
+                  description: "Mood rating of the quote"
+              required:
+                - quote
+                - mood
+      responses:
+        '201':
+          description: The quote was created successfully
+          headers:
+            Location:
+              description: URI of the newly created quote
+              schema:
+                type: string
+        '400':
+          description: The request body was not valid
+        '409':
+          description: A quote with the same text already exists
+        '415':
+          description: Unsupported media type

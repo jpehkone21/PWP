@@ -166,6 +166,12 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/Creature'
+            example:
+              name: "Drako"
+              age: 150
+              picture: "ASCII dragon"
+              type: "Dragon"
+              special_force: "Fire breath"
       responses:
         '204':
           description: Creature updated successfully
@@ -273,6 +279,12 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/Human'
+            example:
+              name: "Marie"
+              age: 29
+              picture: "ASCII human"
+              relation: "Aunt"
+              hobby: "Gardening"
       responses:
         '204':
           description: Human updated successfully
@@ -380,6 +392,12 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/Animal'
+            example:
+              name: "Tinky"
+              age: 5
+              picture: "ASCII dog"
+              species: "dog"
+              environment: "House"
       responses:
         '204':
           description: Animal updated successfully

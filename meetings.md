@@ -39,28 +39,38 @@ Database design and implementation were assessed. Overall it was ok, but the rel
 - (Suggestion that creature types could be constrained in db or in api) 
 
 ## Meeting 3.
-* **DATE:**
-* **ASSISTANTS:**
+* **DATE:** 25.3.2025
+* **ASSISTANTS:** Ivan Sanchez
 
 ### Minutes
 *Summary of what was discussed during the meeting*
+We discussed the API implementation and the tests realted to it. 
 
 ### Action points
 *List here the actions points discussed with assistants*
-
+The API worked and passed the tests we had prepared. However, some issues and possible improvements were discovered in the meeting:
+- Schema validation was not done in POST methods
+- Not Found error returns html
+- Wrong error code for PUT if body is empty
+- Test coverage needs to be added for humans and animals (add same tests that were done to creature)
+- Add examples about uniform interface to wiki
 
 
 
 ## Meeting 4.
-* **DATE:**
-* **ASSISTANTS:**
+* **DATE:** 15.4.2025
+* **ASSISTANTS:** Ivan Sanchez
 
 ### Minutes
 *Summary of what was discussed during the meeting*
+Documentation was assessed (We decided not to implemented hypermedia). At the end we discussed our plans for a client and possibly using chatgpt for an additional service.
 
 ### Action points
 *List here the actions points discussed with assistants*
-
+Documentation overall was good, but it had some small things that need to be fixed:
+- Parameters were not global
+- Error response examples were missing the body
+- Not found response was missing in some routes that had name parameter
 
 
 

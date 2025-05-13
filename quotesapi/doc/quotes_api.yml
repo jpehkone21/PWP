@@ -3,6 +3,31 @@ openapi: 3.0.3
 servers:
 - url: /api
 components:
+  parameters:
+    CreatureName:
+      name: creature
+      in: path
+      required: true
+      description: "Name of the creature"
+      schema:
+        type: string
+
+    HumanName:
+      name: human
+      in: path
+      required: true
+      description: "Name of the human"
+      schema:
+        type: string
+
+    AnimalName:
+      name: animal
+      in: path
+      required: true
+      description: "Name of the animal"
+      schema:
+        type: string
+
   schemas:
     Creature:
       type: object
@@ -150,21 +175,26 @@ paths:
                 type: string
         '400':
           description: The request body was not valid
+          content:
+            text/plain:
+              example: Incomplete request - missing fields
         '409':
           description: A creature with the same handle already exists
+          content:
+            text/plain:
+              example: A creature with the same handle already exists
         '415':
           description: Wrong media type was used
+          content:
+            text/plain:
+              example: Content-Type must be application/json
   
   # CREATURE ITEM
-  /creatures/{name}:
+  /creatures/{creature}:
     get:
       description: Retrieve details of a specific creature
       parameters:
-        - name: name
-          in: path
-          required: true
-          schema:
-            type: string
+        - $ref: '#/components/parameters/CreatureName'
       responses:
         '200':
           description: Details of the creature
@@ -177,11 +207,7 @@ paths:
     put:
       description: Update an existing creature
       parameters:
-        - name: name
-          in: path
-          required: true
-          schema:
-            type: string
+        - $ref: '#/components/parameters/CreatureName'
       requestBody:
         description: JSON document that contains updated data for the creature
         required: true
@@ -200,18 +226,25 @@ paths:
           description: Creature updated successfully
         '400':
           description: Cannot change primary key
+          content:
+            text/plain:
+              example: Cannot change primary key (name)
+        '404':
+          description: Creature not found
         '409':
           description: Creature with the new name already exists
+          content:
+            text/plain:
+              example: Creature with the new name already exists
         '415':
           description: Unsupported media type
+          content:
+            text/plain:
+              example: Content-Type must be application/json
     delete:
       description: Delete an creature from the database
       parameters:
-        - name: name
-          in: path
-          required: true
-          schema:
-            type: string
+        - $ref: '#/components/parameters/CreatureName'
       responses:
         '204':
           description: Creature deleted successfully
@@ -263,21 +296,26 @@ paths:
                 type: string
         '400':
           description: The request body was not valid
+          content:
+            text/plain:
+              example: Incomplete request - missing fields
         '409':
           description: A human with the same handle already exists
+          content:
+            text/plain:
+              example: A human with the same handle already exists
         '415':
           description: Wrong media type was used
+          content:
+            text/plain:
+              example: Content-Type must be application/json
 
   # HUMAN ITEM
-  /humans/{name}:
+  /humans/{human}:
     get:
       description: Retrieve details of a specific human
       parameters:
-        - name: name
-          in: path
-          required: true
-          schema:
-            type: string
+        - $ref: '#/components/parameters/HumanName'
       responses:
         '200':
           description: Details of the human
@@ -290,11 +328,7 @@ paths:
     put:
       description: Update an existing human
       parameters:
-        - name: name
-          in: path
-          required: true
-          schema:
-            type: string
+        - $ref: '#/components/parameters/HumanName'
       requestBody:
         description: JSON document that contains updated data for the human
         required: true
@@ -313,18 +347,25 @@ paths:
           description: Human updated successfully
         '400':
           description: Cannot change primary key
+          content:
+            text/plain:
+              example: Cannot change primary key (name)
+        '404':
+          description: Human not found
         '409':
           description: Human with the new name already exists
+          content:
+            text/plain:
+              example: Human with the new name already exists
         '415':
           description: Unsupported media type
+          content:
+            text/plain:
+              example: Content-Type must be application/json
     delete:
       description: Delete an human from the database
       parameters:
-        - name: name
-          in: path
-          required: true
-          schema:
-            type: string
+        - $ref: '#/components/parameters/HumanName'
       responses:
         '204':
           description: Human deleted successfully
@@ -376,21 +417,26 @@ paths:
                 type: string
         '400':
           description: The request body was not valid
+          content:
+            text/plain:
+              example: Incomplete request - missing fields
         '409':
-          description: A animal with the same handle already exists
+          description: An animal with the same handle already exists
+          content:
+            text/plain:
+              example: An animal with the same handle already exists
         '415':
           description: Wrong media type was used
+          content:
+            text/plain:
+              example: Content-Type must be application/json
 
   # ANIMAL ITEM
-  /animals/{name}:
+  /animals/{animal}:
     get:
       description: Retrieve details of a specific animal
       parameters:
-        - name: name
-          in: path
-          required: true
-          schema:
-            type: string
+        - $ref: '#/components/parameters/AnimalName'
       responses:
         '200':
           description: Details of the animal
@@ -403,11 +449,7 @@ paths:
     put:
       description: Update an existing animal
       parameters:
-        - name: name
-          in: path
-          required: true
-          schema:
-            type: string
+        - $ref: '#/components/parameters/AnimalName'
       requestBody:
         description: JSON document that contains updated data for the animal
         required: true
@@ -426,18 +468,25 @@ paths:
           description: Animal updated successfully
         '400':
           description: Cannot change primary key
+          content:
+            text/plain:
+              example: Cannot change primary key (name)
+        '404':
+          description: Animal not found
         '409':
           description: Animal with the new name already exists
+          content:
+            text/plain:
+              example: Animal with the new name already exists
         '415':
           description: Unsupported media type
+          content:
+            text/plain:
+              example: Content-Type must be application/json
     delete:
       description: Delete an animal from the database
       parameters:
-        - name: name
-          in: path
-          required: true
-          schema:
-            type: string
+        - $ref: '#/components/parameters/AnimalName'
       responses:
         '204':
           description: Animal deleted successfully
@@ -500,21 +549,26 @@ paths:
                 type: string
         '400':
           description: The request body was not valid
+          content:
+            text/plain:
+              example: Incomplete request - missing fields
         '409':
           description: A quote with the same text already exists
+          content:
+            text/plain:
+              example: A quote with the same text already exists
         '415':
-          description: Unsupported media type
+          description: Wrong media type was used
+          content:
+            text/plain:
+              example: Content-Type must be application/json
 
   # QUOTE ITEM ----------------------------------------------------------------------------
   /creatures/{creature}/quotes/:
     get:
       description: Retrieve all quotes for a specific creature
       parameters:
-        - name: creature
-          in: path
-          required: true
-          schema:
-            type: string
+        - $ref: '#/components/parameters/CreatureName'
       responses:
         '200':
           description: List of quotes for the specified creature
@@ -524,14 +578,12 @@ paths:
                 - quote: "Fire is the test of gold."
                   mood: 7.0
                   creature: "Dragon"
+        '404':
+          description: Creature not found 
     post:
       description: Create a new quote for a specific creature
       parameters:
-        - name: creature
-          in: path
-          required: true
-          schema:
-            type: string
+        - $ref: '#/components/parameters/CreatureName'
       requestBody:
         description: JSON document that contains data for the new quote
         content:
@@ -558,20 +610,27 @@ paths:
                 type: string
         '400':
           description: The request body was not valid
+          content:
+            text/plain:
+              example: Incomplete request - missing fields
+        '404':
+          description: Creature not found 
         '409':
           description: A quote with the same text already exists
+          content:
+            text/plain:
+              example: A quote with the same text already exists
         '415':
-          description: Unsupported media type
+          description: Wrong media type was used
+          content:
+            text/plain:
+              example: Content-Type must be application/json
 
   /humans/{human}/quotes/:
     get:
       description: Retrieve all quotes for a specific human
       parameters:
-        - name: human
-          in: path
-          required: true
-          schema:
-            type: string
+        - $ref: '#/components/parameters/HumanName'
       responses:
         '200':
           description: List of quotes for the specified human
@@ -581,14 +640,12 @@ paths:
                 - quote: "To be or not to be, that is the question."
                   mood: 9.0
                   human: "Shakespeare"
+        '404':
+          description: Human not found 
     post:
       description: Create a new quote for a specific human
       parameters:
-        - name: human
-          in: path
-          required: true
-          schema:
-            type: string
+        - $ref: '#/components/parameters/HumanName'
       requestBody:
         description: JSON document that contains data for the new quote
         content:
@@ -615,20 +672,27 @@ paths:
                 type: string
         '400':
           description: The request body was not valid
+          content:
+            text/plain:
+              example: Incomplete request - missing fields
+        '404':
+          description: Human not found 
         '409':
           description: A quote with the same text already exists
+          content:
+            text/plain:
+              example: A quote with the same text already exists
         '415':
-          description: Unsupported media type
+          description: Wrong media type was used
+          content:
+            text/plain:
+              example: Content-Type must be application/json
 
   /animals/{animal}/quotes/:
     get:
       description: Retrieve all quotes for a specific animal
       parameters:
-        - name: animal
-          in: path
-          required: true
-          schema:
-            type: string
+        - $ref: '#/components/parameters/AnimalName'
       responses:
         '200':
           description: List of quotes for the specified animal
@@ -638,14 +702,12 @@ paths:
                 - quote: "The early bird catches the worm."
                   mood: 8.5
                   animal: "Bird"
+        '404':
+          description: Animal not found 
     post:
       description: Create a new quote for a specific animal
       parameters:
-        - name: animal
-          in: path
-          required: true
-          schema:
-            type: string
+        - $ref: '#/components/parameters/AnimalName'
       requestBody:
         description: JSON document that contains data for the new quote
         content:
@@ -672,7 +734,18 @@ paths:
                 type: string
         '400':
           description: The request body was not valid
+          content:
+            text/plain:
+              example: Incomplete request - missing fields
+        '404':
+          description: Animal not found 
         '409':
           description: A quote with the same text already exists
+          content:
+            text/plain:
+              example: A quote with the same text already exists
         '415':
-          description: Unsupported media type
+          description: Wrong media type was used
+          content:
+            text/plain:
+              example: Content-Type must be application/json

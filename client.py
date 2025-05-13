@@ -460,7 +460,7 @@ def main():
 
         elif cmd == '7':
             edit_character()
-        elif cmd == '9':
+        elif cmd == '8':
             delete_character()
 
         elif cmd == 'x':
